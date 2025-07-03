@@ -5,8 +5,9 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "skipLibCheck": true,
+    "noEmit": false,
+    "noImplicitAny": false,
     "strict": false,
-    "noImplicitAny": false
+    "skipLibCheck": true
   }
 }
