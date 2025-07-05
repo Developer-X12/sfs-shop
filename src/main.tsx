@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -8,6 +9,7 @@ const initialProducts = [
     imageUrl: 'https://i.ibb.co/3yhp63qV/IMG-9133.png',
     purchaseUrl: 'https://buy.stripe.com/test_eVqbJ3a2Gc6B9Zh4JTaAw01',
     price: 3.99,
+    oldPrice: 4.99,
     gallery: [
           'https://i.ibb.co/4RfQ6Wvs/IMG-9136.png',
           'https://i.ibb.co/7xGjZGQC/IMG-9137.png',
@@ -133,109 +135,6 @@ const initialProducts = [
 
 // --- Data Layer / Mock API ---
 const STORAGE_KEY = 'spacestore-products';
-
-// --- Google Apps Script Integration ---
-// IMPORTANT: To save and load reviews from a Google Sheet, you need to:
-// 1. Create a new Google Apps Script project.
-// 2. Paste the recommended `doGet` and `doPost` functions below into the script editor.
-// 3. Deploy the script as a Web App (Deploy > New deployment).
-// 4. Configure the Web App to "Execute as: Me" and "Who has access: Anyone".
-// 5. Copy the generated Web App URL and paste it here.
-/*
-  // --- Recommended Google Apps Script (Code.gs) ---
-  const SHEET_NAME = "Reviews";
-  const HEADER = ["Timestamp", "Product ID", "Product Name", "Rating", "Text"];
-
-  // This function runs when the app requests all review data (GET request).
-  function doGet(e) {
-    try {
-      const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-      let sheet = spreadsheet.getSheetByName(SHEET_NAME);
-
-      // If the sheet doesn't exist, create it.
-      if (!sheet) {
-        sheet = spreadsheet.insertSheet(SHEET_NAME);
-      }
-      
-      // If the sheet is completely empty, add the header row.
-      if (sheet.getLastRow() === 0) {
-        sheet.appendRow(HEADER);
-      }
-      
-      const data = sheet.getDataRange().getValues();
-      
-      // Return all data from the sheet.
-      return ContentService
-        .createTextOutput(JSON.stringify({ data: data }))
-        .setMimeType(ContentService.MimeType.JSON);
-
-    } catch (err) {
-      // Log any errors for debugging.
-      Logger.log(err.toString());
-      return ContentService
-        .createTextOutput(JSON.stringify({ result: 'error', message: err.message }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-  }
-
-  // This function runs when the app sends review data via a POST request.
-  function doPost(e) {
-    // Use LockService to prevent race conditions from concurrent requests.
-    const lock = LockService.getScriptLock();
-    lock.waitLock(30000); // Wait up to 30 seconds for other processes to finish.
-
-    try {
-      const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-      let sheet = spreadsheet.getSheetByName(SHEET_NAME);
-
-      // If the sheet doesn't exist, create it and add the header row.
-      if (!sheet) {
-        sheet = spreadsheet.insertSheet(SHEET_NAME);
-        sheet.appendRow(HEADER);
-      }
-      
-      // If the sheet is empty, add the header row.
-      if (sheet.getLastRow() === 0) {
-        sheet.appendRow(HEADER);
-      }
-
-      // Parse the incoming data from the web app.
-      const data = JSON.parse(e.postData.contents);
-      
-      // Basic validation to ensure we have the minimum required data.
-      if (!data.productId || !data.rating) {
-        throw new Error("Missing required data fields (productId, rating).");
-      }
-
-      // Append the new review as a row in the sheet.
-      sheet.appendRow([
-        data.timestamp || new Date().toISOString(),
-        data.productId,
-        data.productName || 'N/A',
-        data.rating,
-        data.text || ''
-      ]);
-      
-      // Return a success response to the client.
-      return ContentService
-        .createTextOutput(JSON.stringify({ result: 'success', row: sheet.getLastRow() }))
-        .setMimeType(ContentService.MimeType.JSON);
-
-    } catch (err) {
-      // Log the error for debugging purposes in Apps Script.
-      Logger.log(err.toString());
-      
-      // Return a detailed error response to the client.
-      return ContentService
-        .createTextOutput(JSON.stringify({ result: 'error', message: err.message }))
-        .setMimeType(ContentService.MimeType.JSON);
-
-    } finally {
-      // Always release the lock to allow other requests to proceed.
-      lock.releaseLock();
-    }
-  }
-*/
 const SPREADSHEET_API_URL = 'https://script.google.com/macros/s/AKfycbx_7vbQ_XYERy7-rFH_xcgMuIyPfhV2u6zEbw7sRdFSnZ_iKCmQFWqI4qCDTuQrbn1m/exec'; // <-- PASTE YOUR WEB APP URL HERE
 
 const api = {
@@ -255,7 +154,7 @@ const api = {
           resolve(initialProducts);
         } catch (error) {
           console.error("API Error: Failed to load products.", error);
-          resolve(initialProducts); // Fallback to initial data on error
+          resolve(initialProducts);
         }
       }, 500);
     });
@@ -263,41 +162,30 @@ const api = {
 
   addProductReview: async (productId: number, review: { rating: number; text: string }, allProducts: any[]): Promise<any[]> => {
     const product = allProducts.find(p => p.id === productId);
-
-    // If the URL is configured, send the review to the Google Sheet.
     if (SPREADSHEET_API_URL && product) {
       const payload = {
+        type: 'review', // Specify type for GAS routing
         timestamp: new Date().toISOString(),
         productId: productId,
         productName: product.name,
         rating: review.rating,
         text: review.text,
       };
-
       try {
-        // We use 'no-cors' mode because standard Apps Script deployments can have CORS issues.
-        // This sends the request ("fires and forgets") without trying to read the response,
-        // which avoids cross-origin errors.
         await fetch(SPREADSHEET_API_URL, {
           method: 'POST',
           mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
       } catch (error) {
         console.error("API Error: Failed to send review to Google Apps Script.", error);
-        // We throw the error so the UI layer can notify the user of the sync failure.
         throw error;
       }
     }
-
-    // Optimistic Update: Update the local state immediately for a good user experience.
     const updatedProducts = allProducts.map(p =>
       p.id === productId ? { ...p, reviews: [review, ...p.reviews] } : p
     );
-    // Persist the new review in localStorage so it's there on page reload.
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedProducts));
     return updatedProducts;
   },
@@ -313,7 +201,6 @@ const calculateReviewStats = (reviews: { rating: number }[]) => {
     return { averageRating, reviewCount };
 };
 
-
 const renderStars = (rating) => {
   if (rating >= 4.8) return '★★★★★';
   if (rating >= 4.3) return '★★★★☆';
@@ -328,7 +215,7 @@ const StarRating = ({ rating, reviewCount = null }) => (
   <div className="product-rating" aria-label={`Rating: ${rating.toFixed(1)} out of 5 stars.`}>
     <span aria-hidden="true">{renderStars(rating)}</span>
     <span aria-hidden="true">{rating.toFixed(1)}</span>
-    {reviewCount && <span className="review-count">({reviewCount} reviews)</span>}
+    {reviewCount !== null && <span className="review-count">({reviewCount} reviews)</span>}
   </div>
 );
 
@@ -337,13 +224,10 @@ const ProductCard = ({ product, onSelect }) => {
     e.stopPropagation();
     window.open(product.purchaseUrl, '_blank', 'noopener,noreferrer');
   };
-
   const handleButtonKeyDown = (e) => {
     if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
   };
-
   const { averageRating, reviewCount } = calculateReviewStats(product.reviews);
-
   return (
     <div
       className="product-card"
@@ -361,7 +245,17 @@ const ProductCard = ({ product, onSelect }) => {
         ) : (
           <div className="product-rating no-reviews">No reviews yet</div>
         )}
-        <p className="product-price">${product.price.toFixed(2)}</p>
+        <div className="product-price-container">
+          {product.oldPrice && (
+            <span className="old-price">${product.oldPrice.toFixed(2)}</span>
+          )}
+          <span className={`product-price ${product.oldPrice ? 'special-price' : ''}`}>
+            ${product.price.toFixed(2)}
+          </span>
+          {product.oldPrice && (
+            <span className="discount-badge">20% OFF!</span>
+          )}
+        </div>
         <button className="buy-button-small" onClick={handleBuyNowClick} onKeyDown={handleButtonKeyDown} aria-label={`Buy ${product.name} now`}>
           BUY NOW
         </button>
@@ -370,29 +264,61 @@ const ProductCard = ({ product, onSelect }) => {
   );
 };
 
-const CartIcon = () => (
-    <div className="cart-icon-wrapper">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.5 7.5L16 3M16 3L13.5 7.5M16 3V12M16 12C16 13.5 15.5 15 14.5 16M16 12C16 13.5 16.5 15 17.5 16" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 21H17C17.5523 21 18 20.5523 18 20V19C18 17.8954 17.1046 17 16 17H8C6.89543 17 6 17.8954 6 19V20C6 20.5523 6.44772 21 7 21Z" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-        <div className="cart-badge">1</div>
-    </div>
+const MenuIcon = ({ onClick }) => (
+    <button onClick={onClick} className="menu-button" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 6H20M4 12H20M4 18H20" stroke="#1d1d1f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+    </button>
 );
 
-
-const ListHeader = () => (
+const MainHeader = ({ onMenuClick }) => (
   <header className="header">
     <div className="header-brand">
       <img src="https://i.ibb.co/jPnwrGsD/photo-output.jpg$0" alt="IAMSPACEROCKET logo" className="header-logo" />
       <h1 className="header-title">IAMSPACEROCKET</h1>
     </div>
     <div className="header-actions">
-       <CartIcon />
+       <MenuIcon onClick={onMenuClick} />
     </div>
   </header>
 );
 
-const ProductListPage = ({ products, onProductSelect }) => (
+const SubPageHeader = ({ title, onBack }) => (
+    <header className="header detail-header">
+        <button onClick={onBack} className="back-button" aria-label="Go back">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 18L9 12L15 6" stroke="#1d1d1f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
+        <h2 className="header-title">{title}</h2>
+        <div style={{ width: '44px' }} />
+    </header>
+);
+
+const MenuOverlay = ({ isOpen, onClose, onNavigate }) => {
+    if (!isOpen) return null;
+    const handleNavigate = (view) => {
+        onNavigate(view);
+        onClose();
+    };
+    return (
+        <div className="menu-overlay-backdrop" onClick={onClose}>
+            <div className="menu-overlay-content" onClick={(e) => e.stopPropagation()}>
+                <button className="close-menu-button" onClick={onClose} aria-label="Close menu">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 6L6 18M6 6L18 18" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <nav className="menu-nav">
+                    <a role="button" tabIndex={0} onClick={() => handleNavigate('legal')}>Legal / Terms of Service</a>
+                    <a role="button" tabIndex={0} onClick={() => handleNavigate('privacy')}>Privacy Policy</a>
+                    <a role="button" tabIndex={0} onClick={() => handleNavigate('contact')}>Contact Us</a>
+                </nav>
+            </div>
+        </div>
+    );
+};
+
+const ProductListPage = ({ products, onProductSelect, onMenuClick }) => (
   <>
-    <ListHeader />
+    <MainHeader onMenuClick={onMenuClick} />
     <main className="product-list">
       {products.map(product => (
         <ProductCard key={product.id} product={product} onSelect={onProductSelect} />
@@ -403,7 +329,6 @@ const ProductListPage = ({ products, onProductSelect }) => (
 
 const ExistingReviews = ({ reviews }) => {
   if (!reviews || reviews.length === 0) return null;
-
   return (
     <div className="existing-reviews-section">
       <h3>Reviews</h3>
@@ -423,13 +348,11 @@ const ReviewSection = ({ onSubmit }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
-
   const handleSubmit = () => {
     if (rating === 0) { alert('Please select a star rating.'); return; }
     onSubmit({ rating, text: reviewText });
     setRating(0); setHoverRating(0); setReviewText('');
   };
-
   return (
     <div className="review-section">
       <h3>Write a Review</h3>
@@ -448,36 +371,21 @@ const ReviewSection = ({ onSubmit }) => {
 
 const StructuredDescription = ({ description }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
-  const THRESHOLD = 4; // Show first 4 items before collapsing
-
-  if (!description) {
-    return null;
-  }
-
-  // Handle plain string descriptions
+  const THRESHOLD = 4;
+  if (!description) return null;
   if (typeof description === 'string') {
-    return (
-      <div className="detail-product-description">
-        <p className="detail-product-description-paragraph">{description}</p>
-      </div>
-    );
+    return (<div className="detail-product-description"><p className="detail-product-description-paragraph">{description}</p></div>);
   }
-
-  // Handle structured array descriptions
   if (Array.isArray(description)) {
     const isLongDescription = description.length > THRESHOLD;
     const itemsToShow = isLongDescription && !isExpanded ? description.slice(0, THRESHOLD) : description;
-
     return (
       <div className="detail-product-description">
         {itemsToShow.map((item, index) => {
           switch (item.type) {
-            case 'heading':
-              return <h4 key={index} className="detail-product-description-heading">{item.content}</h4>;
-            case 'paragraph':
-              return <p key={index} className="detail-product-description-paragraph">{item.content}</p>;
-            default:
-              return null;
+            case 'heading': return <h4 key={index} className="detail-product-description-heading">{item.content}</h4>;
+            case 'paragraph': return <p key={index} className="detail-product-description-paragraph">{item.content}</p>;
+            default: return null;
           }
         })}
         {isLongDescription && (
@@ -488,15 +396,12 @@ const StructuredDescription = ({ description }) => {
       </div>
     );
   }
-
   return null;
 };
 
 const ProductDetailPage = ({ product, onBack, onAddReview }) => {
   const [selectedImage, setSelectedImage] = useState(product.gallery?.[0] || product.imageUrl);
-
   const handleBuyNow = () => window.open(product.purchaseUrl, '_blank', 'noopener,noreferrer');
-
   const handleSelectImage = (imageUrl) => {
     const img = document.querySelector<HTMLElement>('.detail-image');
     if (img) {
@@ -506,18 +411,11 @@ const ProductDetailPage = ({ product, onBack, onAddReview }) => {
       setSelectedImage(imageUrl);
     }
   };
-
   const handleReviewSubmit = (review) => onAddReview(product.id, review);
-
   const { averageRating, reviewCount } = calculateReviewStats(product.reviews);
-
   return (
     <div className="product-detail-page">
-      <header className="header detail-header">
-        <button onClick={onBack} className="back-button" aria-label="Go back to product list"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 18L9 12L15 6" stroke="#1d1d1f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></button>
-        <h2 className="header-title">Details</h2>
-        <div style={{ width: '44px' }} />
-      </header>
+      <SubPageHeader title="Details" onBack={onBack} />
       <main className="detail-content">
         <div className="detail-media-section">
             <div className="detail-image-container"><img src={selectedImage} alt={`${product.name} - current view`} className="detail-image" /></div>
@@ -538,7 +436,13 @@ const ProductDetailPage = ({ product, onBack, onAddReview }) => {
           ) : (
             <div className="product-rating no-reviews">No reviews yet</div>
           )}
-          <p className="detail-product-price">${product.price.toFixed(2)}</p>
+          <div className="detail-price-container">
+            {product.oldPrice && <span className="detail-old-price">${product.oldPrice.toFixed(2)}</span>}
+            <span className="detail-product-price">${product.price.toFixed(2)}</span>
+            {product.oldPrice && (
+                <span className="discount-badge">20% OFF!</span>
+            )}
+          </div>
           <StructuredDescription description={product.description} />
           <button className="buy-button" onClick={handleBuyNow}>BUY NOW</button>
           <ReviewSection onSubmit={handleReviewSubmit} />
@@ -549,89 +453,190 @@ const ProductDetailPage = ({ product, onBack, onAddReview }) => {
   );
 };
 
+const LegalPage = ({ onBack }) => (
+    <div className="generic-page">
+        <SubPageHeader title="Legal / Terms of Service" onBack={onBack} />
+        <main className="generic-page-content">
+           <h3>Act on Specified Commercial Transactions</h3>
+              <p><strong>Business Name:</strong> SFSBP Shop</p>
+              <p><strong>Operator:</strong> Haruto Oikawa</p>
+              <p><strong>Location:</strong> Osaka City, Osaka Prefecture, Japan (Exact address available upon request)</p>
+              <p><strong>Contact Email:</strong> harutooikawa46@gmail.com</p>
+              <p><strong>Sales Price:</strong> Displayed on each product page</p>
+              <p><strong>Payment Method:</strong> Credit Card (via Stripe)</p>
+              <p><strong>Delivery Method:</strong> Digital download via email or instant link</p>
+              <p><strong>Delivery Time:</strong> Immediately after payment confirmation</p>
+              <p><strong>Returns and Refunds:</strong> Due to the nature of digital products, returns and refunds are not accepted</p>
+              <p><strong>Prohibited Actions:</strong> Redistribution, re-uploading, or resale of purchased blueprints is strictly prohibited</p>
+        </main>
+    </div>
+);
+
+const PrivacyPolicyPage = ({ onBack }) => (
+    <div className="generic-page">
+        <SubPageHeader title="Privacy Policy" onBack={onBack} />
+        <main className="generic-page-content">
+          <p>This Privacy Policy explains how your personal information is collected, used, and shared when you visit or make a purchase from SFSBP Shop.</p>
+
+          <h4>Personal Information We Collect</h4>
+          <p>When you make a purchase, we collect the following information: your name, email address, and payment details (handled securely via Stripe). We refer to this as "Order Information."</p>
+
+          <p>We also collect messages you send through the contact form, which may include your email address and any information you provide voluntarily.</p>
+
+          <h4>How We Use Your Information</h4>
+          <p>We use the collected Order Information to fulfill purchases, send confirmation messages, and improve customer support. Your contact form submissions may be used to respond to your inquiries.</p>
+
+          <h4>Data Retention</h4>
+          <p>We retain Order Information and contact form submissions unless you request deletion by contacting us.</p>
+
+          <h4>Sharing Your Information</h4>
+          <p>We do not share your personal information with third parties except as required by law, or as necessary to process payments (e.g., via Stripe).</p>
+
+          <h4>Changes to This Policy</h4>
+          <p>This Privacy Policy may be updated periodically to reflect changes in legal requirements or business practices.</p>
+
+          <h4>Contact</h4>
+          <p>If you have any questions or requests regarding this Privacy Policy, please contact us at <a href="mailto:harutooikawa46@gmail.com">harutooikawa46@gmail.com</a> or via the contact form available on this website.</p>
+        </main>
+    </div>
+);
+
+const ContactPage = ({ onBack, onBackToList }) => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!name || !email || !message) {
+            alert('Please fill out all fields.');
+            return;
+        }
+
+        if (!SPREADSHEET_API_URL) {
+            alert("Developer Note: SPREADSHEET_API_URL is not set. The message cannot be sent.");
+            console.log({ type: 'contact', name, email, message });
+            setSubmitted(true);
+            return;
+        }
+
+        setIsSubmitting(true);
+        const payload = {
+            type: 'contact',
+            name,
+            email,
+            message,
+        };
+
+        try {
+            await fetch(SPREADSHEET_API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            // Since mode is 'no-cors', we can't inspect the response.
+            // We assume success if fetch doesn't throw a network error.
+            setSubmitted(true);
+        } catch (error) {
+            console.error("API Error: Failed to send contact message to Google Apps Script.", error);
+            alert("An error occurred while sending your message. Please check your connection and try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <div className="generic-page">
+            <SubPageHeader title="Contact Us" onBack={onBack} />
+            <main className="generic-page-content">
+                {submitted ? (
+                    <div className="form-success-message">
+                        <h3>Thank You!</h3>
+                        <p>Your message has been received. We will get back to you shortly.</p>
+                        <button onClick={onBackToList} className="buy-button">Back to Store</button>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit} className="contact-form">
+                        <div className="form-group">
+                            <label htmlFor="name">Name</label>
+                            <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} required disabled={isSubmitting} />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="email">Email</label>
+                            <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={isSubmitting} />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="message">Message</label>
+                            <textarea id="message" value={message} onChange={(e) => setMessage(e.target.value)} required rows={6} disabled={isSubmitting}></textarea>
+                        </div>
+                        <button type="submit" className="review-submit-button" disabled={isSubmitting}>
+                            {isSubmitting ? 'Sending...' : 'Send Message'}
+                        </button>
+                    </form>
+                )}
+            </main>
+        </div>
+    );
+};
+
+
 const App = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [currentView, setCurrentView] = useState({ name: 'list', id: null });
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const loadProductsAndReviews = async () => {
       setIsLoading(true);
-      
       let productData = await api.fetchProducts();
-
       if (SPREADSHEET_API_URL) {
         try {
           const response = await fetch(SPREADSHEET_API_URL);
-          if (!response.ok) {
-            throw new Error(`Network response was not ok: ${response.statusText}`);
-          }
+          if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
           const result = await response.json();
-
-          if (!result || !Array.isArray(result.data)) {
-            throw new Error("Invalid data format from spreadsheet.");
-          }
-
+          if (!result || !Array.isArray(result.data)) throw new Error("Invalid data format from spreadsheet.");
           const reviewsByProduct = new Map<number, any[]>();
           const header = result.data[0] || [];
           const reviewsData = result.data.slice(1);
-
-          const idIndex = header.indexOf("Product ID");
-          const ratingIndex = header.indexOf("Rating");
-          const textIndex = header.indexOf("Text");
-          
+          const idIndex = header.indexOf("Product ID"), ratingIndex = header.indexOf("Rating"), textIndex = header.indexOf("Text");
           if (idIndex > -1 && ratingIndex > -1 && textIndex > -1 && reviewsData.length > 0) {
             reviewsData.forEach(row => {
-              if (!Array.isArray(row) || row.length <= Math.max(idIndex, ratingIndex, textIndex)) {
-                console.warn('Skipping malformed review row:', row);
-                return;
-              }
-
+              if (!Array.isArray(row) || row.length <= Math.max(idIndex, ratingIndex, textIndex)) return;
               const productId = parseInt(row[idIndex], 10);
               const rating = parseFloat(row[ratingIndex]);
-              
-              if (isNaN(productId) || isNaN(rating)) {
-                console.warn('Skipping malformed review data:', row);
-                return;
-              }
-
+              if (isNaN(productId) || isNaN(rating)) return;
               const review = { rating, text: row[textIndex] || '' };
-              if (!reviewsByProduct.has(productId)) {
-                reviewsByProduct.set(productId, []);
-              }
+              if (!reviewsByProduct.has(productId)) reviewsByProduct.set(productId, []);
               reviewsByProduct.get(productId)!.unshift(review);
             });
           }
-          
-          // After a successful fetch, the spreadsheet becomes the source of truth.
-          // We replace all local reviews with the ones from the sheet.
-          productData = productData.map(product => ({
-            ...product,
-            reviews: reviewsByProduct.get(product.id) || [],
-          }));
-
+          productData = productData.map(product => ({ ...product, reviews: reviewsByProduct.get(product.id) || [] }));
         } catch (error) {
           console.error("Failed to fetch or process reviews from Google Sheet. Using local data.", error);
-          // When an error occurs, we consciously do nothing to `productData`,
-          // so it retains the state from localStorage as a fallback.
         }
       }
-      
       setProducts(productData);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(productData));
       setIsLoading(false);
     };
-
     loadProductsAndReviews();
   }, []);
 
-  const handleProductSelect = (id) => setSelectedProductId(id);
-  const handleBack = () => setSelectedProductId(null);
+  const handleProductSelect = (id) => setCurrentView({ name: 'detail', id });
+  const handleBackToList = () => setCurrentView({ name: 'list', id: null });
+  const handleNavigate = (page) => setCurrentView({ name: page, id: null });
+
+  const handleBackToMenu = () => {
+    setCurrentView({ name: 'list', id: null });
+    setIsMenuOpen(true);
+  };
 
   const handleAddReview = async (productId, review) => {
-    if (!SPREADSHEET_API_URL) {
-      alert("Developer Note: To save reviews to Google Sheets, set the SPREADSHEET_API_URL in `index.tsx`. Reviews are currently saved locally only.");
-    }
+    if (!SPREADSHEET_API_URL) alert("Developer Note: To save reviews to Google Sheets, set the SPREADSHEET_API_URL. Reviews are currently saved locally only.");
     try {
       const updatedProducts = await api.addProductReview(productId, review, products);
       setProducts(updatedProducts);
@@ -641,27 +646,39 @@ const App = () => {
     }
   };
   
-  const selectedProduct = products.find(p => p.id === selectedProductId);
-
+  const renderContent = () => {
+    const selectedProduct = products.find(p => p.id === currentView.id);
+    switch (currentView.name) {
+      case 'detail':
+        return selectedProduct ? <ProductDetailPage product={selectedProduct} onBack={handleBackToList} onAddReview={handleAddReview} /> : <ProductListPage products={products} onProductSelect={handleProductSelect} onMenuClick={() => setIsMenuOpen(true)} />;
+      case 'legal':
+        return <LegalPage onBack={handleBackToMenu} />;
+      case 'privacy':
+        return <PrivacyPolicyPage onBack={handleBackToMenu} />;
+      case 'contact':
+        return <ContactPage onBack={handleBackToMenu} onBackToList={handleBackToList} />;
+      case 'list':
+      default:
+        return <ProductListPage products={products} onProductSelect={handleProductSelect} onMenuClick={() => setIsMenuOpen(true)} />;
+    }
+  };
+  
   if (isLoading) {
     return (
-        <div className="app-loading">
-            <ListHeader />
-            <div className="loading-indicator">
-                <div className="spinner"></div>
-                <p>Loading Blueprints...</p>
-            </div>
+      <div className="app-loading">
+        <MainHeader onMenuClick={() => {}} />
+        <div className="loading-indicator">
+          <div className="spinner"></div>
+          <p>Loading Blueprints...</p>
         </div>
+      </div>
     );
   }
   
   return (
     <div className="app">
-      {selectedProduct ? (
-        <ProductDetailPage product={selectedProduct} onBack={handleBack} onAddReview={handleAddReview} />
-      ) : (
-        <ProductListPage products={products} onProductSelect={handleProductSelect} />
-      )}
+      {renderContent()}
+      <MenuOverlay isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} onNavigate={handleNavigate} />
     </div>
   );
 };
