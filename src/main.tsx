@@ -134,7 +134,7 @@ const initialProducts = [
     name: 'Starship Blueprint',
     imageUrl: 'https://i.ibb.co/9kQkv6QZ/IMG-9130.png',
     purchaseUrl: 'https://buy.stripe.com/bJe5kE4Xt5Yi91jgbl4gg04',
-    price: 0.00,
+    price: 2.49,
     available: false,
     gallery: [
       'https://i.ibb.co/p6crBFWv/IMG-9309.png',
