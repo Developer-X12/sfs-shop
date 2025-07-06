@@ -198,6 +198,19 @@
     .buy-button-small { background-color: var(--primary-color); color: white; border: none; border-radius: 10px; padding: 10px 16px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; width: 100%; box-sizing: border-box; margin-top: auto; }
     .buy-button-small:hover, .buy-button-small:focus { background-color: #005bb5; outline: none; }
 
+    .available-soon-label {
+        background-color: #e8e8e8;
+        color: #86868b;
+        border-radius: 10px;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: auto;
+    }
+    
     .discount-badge {
       background-color: #ff3b30;
       color: white;
@@ -223,9 +236,34 @@
     .generic-page-content p strong { font-weight: 600; }
 
     .detail-media-section { background-color: var(--image-bg); padding-bottom: 16px; }
-    .detail-image-container { width: 100%; padding-top: 80%; position: relative; background-color: var(--image-bg); }
-    .detail-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 24px; box-sizing: border-box; transition: opacity 0.3s ease-in-out; }
-
+    .detail-image-container {
+      width: 100%;
+      position: relative;
+      background-color: var(--image-bg);
+      overflow: hidden;
+    }
+    .gallery-slider {
+      display: flex;
+      transition: transform 0.4s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+    }
+    .detail-image-slide {
+      flex-shrink: 0;
+      width: 100%;
+      padding-top: 80%; /* Aspect ratio preservation */
+      position: relative;
+      box-sizing: border-box;
+    }
+    .detail-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+    
     .detail-gallery { display: flex; gap: 12px; padding: 0 24px; margin-top: 16px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
     .detail-gallery::-webkit-scrollbar { display: none; }
     .gallery-thumbnail-container { flex-shrink: 0; border-radius: 10px; cursor: pointer; border: 3px solid transparent; transition: border-color 0.2s ease-in-out; overflow: hidden; width: 70px; height: 70px; box-sizing: border-box; background-color: #fff; }
@@ -233,6 +271,44 @@
     .gallery-thumbnail-container.active { border-color: var(--primary-color); }
     .gallery-thumbnail { width: 100%; height: 100%; object-fit: cover; display: block; }
     
+    .gallery-nav-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(29, 29, 31, 0.4);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s ease, opacity 0.2s ease;
+      z-index: 2;
+      padding: 0;
+      opacity: 0.7;
+    }
+    
+    .gallery-nav-button:hover, .gallery-nav-button:focus {
+      background-color: rgba(29, 29, 31, 0.6);
+      opacity: 1;
+    }
+    
+    .gallery-nav-button.prev {
+      left: 16px;
+    }
+
+    .gallery-nav-button.next {
+      right: 16px;
+    }
+    
+    .gallery-nav-button:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
     .detail-info-panel { padding: 24px; display: flex; flex-direction: column; gap: 20px; background-color: var(--background-color); border-top-left-radius: 20px; border-top-right-radius: 20px; margin-top: -20px; position: relative; z-index: 5; }
     .detail-product-name { font-size: 1.75rem; font-weight: 700; margin: 0; line-height: 1.2; }
     .detail-info-panel .product-rating { font-size: 1rem; }
@@ -256,6 +332,11 @@
     .toggle-description-button:hover, .toggle-description-button:focus { text-decoration: underline; outline: none; }
     .buy-button { background-color: var(--primary-color); color: white; border: none; border-radius: 12px; padding: 16px; font-size: 1rem; font-weight: 600; cursor: pointer; text-align: center; transition: background-color 0.2s ease; width: 100%; }
     .buy-button:hover, .buy-button:focus { background-color: #005bb5; outline: none; }
+    .buy-button[disabled] {
+      background-color: #e8e8e8;
+      color: #86868b;
+      cursor: not-allowed;
+    }
 
     /* Menu Overlay Styles */
     @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }

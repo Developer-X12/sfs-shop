@@ -7,7 +7,7 @@ const initialProducts = [
     id: 1,
     name: 'Titan-Starship Blueprint',
     imageUrl: 'https://i.ibb.co/3yhp63qV/IMG-9133.png',
-    purchaseUrl: 'https://buy.stripe.com/test_eVqbJ3a2Gc6B9Zh4JTaAw01',
+    purchaseUrl: 'https://buy.stripe.com/14AfZifC772mcdvbV54gg02',
     price: 3.99,
     oldPrice: 4.99,
     gallery: [
@@ -44,15 +44,13 @@ const initialProducts = [
   { type: 'paragraph', content: '• Download link is for one-time use by the purchaser only.' },
     ],
     reviews: [
-      { rating: 5, text: "An absolutely fantastic blueprint. The detail is incredible. A must-have for any space enthusiast." },
-      { rating: 4, text: "Very high quality print. It looks great on my wall. Shipped faster than expected." },
     ],
   },
   {
     id: 2,
     name: 'Falcon 9 Blueprint',
     imageUrl: 'https://i.ibb.co/LXbz3JRp/IMG-9056.png',
-    purchaseUrl: 'https://buy.stripe.com/test_5kQ7sNfn01rX9Zh6S1bBw44',
+    purchaseUrl: 'https://buy.stripe.com/aFafZi9dJ3Qa2CVgbl4gg00',
     price: 2.49,
     gallery: [
         'https://i.ibb.co/LXbz3JRp/IMG-9056.png',
@@ -88,47 +86,67 @@ const initialProducts = [
   { type: 'paragraph', content: '• Download link is for one-time use by the purchaser only.' }
 ],
     reviews: [
-      { rating: 5, text: "The future is here! This Starship blueprint is inspiring." }
-    ],
+        ],
   },
     {
     id: 3,
     name: 'HLS-Starship Blueprint',
     imageUrl: 'https://i.ibb.co/hFKLxD82/IMG-9131.png',
-    purchaseUrl: 'https://buy.stripe.com/test_5kQ7sNfn01rX9Zh6S1cCy88',
+    purchaseUrl: 'https://buy.stripe.com/aFa9AU89FbiCgtL3oz4gg03',
     price: 3.99,
     gallery: [
-      'https://i.imgur.com/7c1p49v.png',
-      'https://i.imgur.com/fL4yP85.jpeg',
-      'https://i.imgur.com/OslpE2s.jpeg',
+        'https://i.ibb.co/8DPFjNMV/IMG-9302.png',
+        'https://i.ibb.co/gL7Xmp6Q/IMG-9303.png',
+        'https://i.ibb.co/0S208Zt/IMG-9304.png',
+        'https://i.ibb.co/9HWrBxMM/IMG-9305.png',
+        'https://i.ibb.co/Y7XXDgB0/IMG-9306.png',
+        'https://i.ibb.co/93CHfKHQ/IMG-9307.png',
+        'https://i.ibb.co/ZpQDBXRg/IMG-9137.png',
+        'https://i.ibb.co/8gvfxNQy/IMG-9147.jpg',
     ],
     description: [
-        { type: 'heading', content: 'The Legend That Reached the Moon' },
-        { type: 'paragraph', content: 'The legendary Saturn V, the rocket that took humanity to the Moon. This blueprint captures the immense scale and engineering genius of the Apollo program. A must-have for any history buff or lover of classic space exploration.' }
+        { type: 'heading', content: '🚀Product Overview' },
+        { type: 'paragraph', content: 'Titan-class Starship HLS Variant — this blueprint is a specialized modification of the massive 18m diameter Titan-Starship, tailored for Human Landing System (HLS) missions. It combines extreme scale and visual presence with realistic lunar landing design elements.' },
+
+        { type: 'heading', content: '🛠️Features' },
+        { type: 'paragraph', content: '• Full height: Approximately 340 meters (in-game scale, booster + HLS ship)' },
+        { type: 'paragraph', content: '• Diameter: Huge 18 meters — Titan-class scale maintained' },
+        { type: 'paragraph', content: '• Propulsion: Vacuum-optimized Raptor engine configuration with HLS-style engine mount' },
+        { type: 'paragraph', content: '• Design: Simplified body paint, extended landing legs, and HLS structural modules' },
+
+        { type: 'heading', content: '🎯Performance' },
+        { type: 'paragraph', content: '• Built for lunar descent, low-gravity operation, and realistic mission simulation' },
+        { type: 'paragraph', content: '• Stable flip-burn capability and clean stage separation' },
+        { type: 'paragraph', content: '• Ideal for custom HLS mission recreations in SFS' },
+
+        { type: 'heading', content: '⚠️Important Notice' },
+        { type: 'paragraph', content: '• This is a digital blueprint file. No physical product will be shipped.' },
+        { type: 'paragraph', content: '• Once purchased, this file is non-refundable.' },
+        { type: 'paragraph', content: '• Redistribution, re-uploading, or resale of this blueprint is strictly prohibited.' },
+        { type: 'paragraph', content: '• Compatibility with all SFS versions or modded setups is not guaranteed.' },
+        { type: 'paragraph', content: '• Download link is for one-time use by the purchaser only.' }
     ],
     reviews: [
-      { rating: 5, text: "Iconic rocket, iconic blueprint. Perfect quality." },
-      { rating: 5, text: "A piece of history, beautifully rendered." },
-      { rating: 5, text: "Couldn't be happier with this purchase. Captures the majesty of the Saturn V." },
-    ],
+   ],
   },
   {
     id: 4,
-    name: 'Normal Starship Blueprint',
+    name: 'Starship Blueprint',
     imageUrl: 'https://i.ibb.co/9kQkv6QZ/IMG-9130.png',
-    purchaseUrl: 'https://buy.stripe.com/test_5kQ7sNfn01rX9Zh6S1dDAcc',
-    price: 2.49,
+    purchaseUrl: 'https://buy.stripe.com/bJe5kE4Xt5Yi91jgbl4gg04',
+    price: 0.00,
+    available: false,
     gallery: [
-      'https://i.imgur.com/3Z46s0a.png',
-      'https://i.imgur.com/hYvQjJc.jpeg',
-      'https://i.imgur.com/5zaP3i2.jpeg',
+      'https://i.ibb.co/p6crBFWv/IMG-9309.png',
+      'https://i.ibb.co/RtGCKQy/IMG-9310.png',
+      'https://i.ibb.co/snTbsSz/IMG-9311.png',
     ],
     description: [
-        { type: 'heading', content: 'The Workhorse of an Era' },
-        { type: 'paragraph', content: 'A detailed look at the Space Shuttle orbiter, the first reusable spacecraft. This blueprint showcases the complexity and versatility of the vehicle that deployed the Hubble Space Telescope and built the International Space Station.' }
+      { type: 'heading', content: 'Coming Soon: 9m Starship Blueprint' },
+      { type: 'paragraph', content: 'A compact yet realistic blueprint of the standard 9-meter diameter Starship. Designed for simplicity, performance, and everyday SFS missions, this version balances accuracy and playability for all users.' },
+      { type: 'paragraph', content: 'Ideal for orbital launches, payload testing, and role-playing scenarios. Stay tuned — this workhorse will be available soon!' } 
     ],
     reviews: [
-      { rating: 5, text: "Brings back so many memories of watching the shuttle launches. Great item." },
     ],
   }
 ];
@@ -256,9 +274,13 @@ const ProductCard = ({ product, onSelect }) => {
             <span className="discount-badge">20% OFF!</span>
           )}
         </div>
-        <button className="buy-button-small" onClick={handleBuyNowClick} onKeyDown={handleButtonKeyDown} aria-label={`Buy ${product.name} now`}>
-          BUY NOW
-        </button>
+        {product.available !== false ? (
+          <button className="buy-button-small" onClick={handleBuyNowClick} onKeyDown={handleButtonKeyDown} aria-label={`Buy ${product.name} now`}>
+            BUY NOW
+          </button>
+        ) : (
+          <div className="available-soon-label">Available Soon</div>
+        )}
       </div>
     </div>
   );
@@ -400,29 +422,82 @@ const StructuredDescription = ({ description }) => {
 };
 
 const ProductDetailPage = ({ product, onBack, onAddReview }) => {
-  const [selectedImage, setSelectedImage] = useState(product.gallery?.[0] || product.imageUrl);
+  const gallery = product.gallery && product.gallery.length > 0 ? product.gallery : [product.imageUrl];
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   const handleBuyNow = () => window.open(product.purchaseUrl, '_blank', 'noopener,noreferrer');
-  const handleSelectImage = (imageUrl) => {
-    const img = document.querySelector<HTMLElement>('.detail-image');
-    if (img) {
-      img.style.opacity = '0';
-      setTimeout(() => { setSelectedImage(imageUrl); img.style.opacity = '1'; }, 300);
-    } else {
-      setSelectedImage(imageUrl);
-    }
+
+  const handleSelectIndex = (index: number) => {
+    setCurrentIndex(index);
   };
+  
+  const goToNext = () => {
+    const nextIndex = (currentIndex + 1) % gallery.length;
+    handleSelectIndex(nextIndex);
+  };
+
+  const goToPrev = () => {
+    const prevIndex = (currentIndex - 1 + gallery.length) % gallery.length;
+    handleSelectIndex(prevIndex);
+  };
+  
+  // Swipe Handlers
+  const [touchStartX, setTouchStartX] = React.useState<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (gallery.length <= 1) return;
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null || gallery.length <= 1) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+    const minSwipeDistance = 50;
+
+    if (diff > minSwipeDistance) { // Swiped left
+      goToNext();
+    } else if (diff < -minSwipeDistance) { // Swiped right
+      goToPrev();
+    }
+    setTouchStartX(null);
+  };
+
   const handleReviewSubmit = (review) => onAddReview(product.id, review);
   const { averageRating, reviewCount } = calculateReviewStats(product.reviews);
+
   return (
     <div className="product-detail-page">
       <SubPageHeader title="Details" onBack={onBack} />
       <main className="detail-content">
         <div className="detail-media-section">
-            <div className="detail-image-container"><img src={selectedImage} alt={`${product.name} - current view`} className="detail-image" /></div>
-             {product.gallery && product.gallery.length > 1 && (
+            <div 
+              className="detail-image-container"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div className="gallery-slider" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+                {gallery.map((image, index) => (
+                  <div className="detail-image-slide" key={index}>
+                    <img src={image} alt={`${product.name} - view ${index + 1}`} className="detail-image" />
+                  </div>
+                ))}
+              </div>
+              {gallery.length > 1 && (
+                <>
+                  <button onClick={(e) => { e.stopPropagation(); goToPrev(); }} className="gallery-nav-button prev" aria-label="Previous image">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </button>
+                  <button onClick={(e) => { e.stopPropagation(); goToNext(); }} className="gallery-nav-button next" aria-label="Next image">
+                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </button>
+                </>
+              )}
+            </div>
+             {gallery.length > 1 && (
               <div className="detail-gallery">
-                {product.gallery.map((image, index) => (
-                  <div key={index} className={`gallery-thumbnail-container ${image === selectedImage ? 'active' : ''}`} onClick={() => handleSelectImage(image)} onKeyDown={(e) => e.key === 'Enter' && handleSelectImage(image)} role="button" tabIndex={0} aria-label={`View image ${index + 1} of ${product.name}`}>
+                {gallery.map((image, index) => (
+                  <div key={index} className={`gallery-thumbnail-container ${index === currentIndex ? 'active' : ''}`} onClick={() => handleSelectIndex(index)} onKeyDown={(e) => e.key === 'Enter' && handleSelectIndex(index)} role="button" tabIndex={0} aria-label={`View image ${index + 1} of ${product.name}`}>
                     <img src={image} alt={`Thumbnail ${index + 1}`} className="gallery-thumbnail" />
                   </div>
                 ))}
@@ -444,7 +519,11 @@ const ProductDetailPage = ({ product, onBack, onAddReview }) => {
             )}
           </div>
           <StructuredDescription description={product.description} />
-          <button className="buy-button" onClick={handleBuyNow}>BUY NOW</button>
+          {product.available !== false ? (
+            <button className="buy-button" onClick={handleBuyNow}>BUY NOW</button>
+          ) : (
+            <button className="buy-button" disabled>Available Soon</button>
+          )}
           <ReviewSection onSubmit={handleReviewSubmit} />
           <ExistingReviews reviews={product.reviews} />
         </div>
@@ -452,6 +531,7 @@ const ProductDetailPage = ({ product, onBack, onAddReview }) => {
     </div>
   );
 };
+
 
 const LegalPage = ({ onBack }) => (
     <div className="generic-page">
