@@ -50,7 +50,7 @@ const initialProducts = [
     id: 2,
     name: 'Falcon 9 Blueprint',
     imageUrl: 'https://i.ibb.co/LXbz3JRp/IMG-9056.png',
-    purchaseUrl: 'https://buy.stripe.com/9B65kE4Xt9au1yRcZ94gg05',
+    purchaseUrl: 'https://buy.stripe.com/aFafZi9dJ3Qa2CVgbl4gg00',
     price: 2.49,
     gallery: [
         'https://i.ibb.co/LXbz3JRp/IMG-9056.png',
