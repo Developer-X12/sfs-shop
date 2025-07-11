@@ -576,7 +576,7 @@ const PrivacyPolicyPage = ({ onBack }) => (
           <p>This Privacy Policy may be updated periodically to reflect changes in legal requirements or business practices.</p>
 
           <h4>Contact</h4>
-          <p>If you have any questions or requests regarding this Privacy Policy, please contact us at <a href="mailto:harutooikawa46@gmail.com">harutooikawa46@gmail.com</a> or via the contact form available on this website.</p>
+          <p>If you have any questions or requests regarding this Privacy Policy, please contact us at <a href="unknown"></a> or via the contact form available on this website.</p>
         </main>
     </div>
 );
