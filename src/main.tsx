@@ -539,9 +539,9 @@ const LegalPage = ({ onBack }) => (
         <main className="generic-page-content">
            <h3>Act on Specified Commercial Transactions</h3>
               <p><strong>Business Name:</strong> SFSBP Shop</p>
-              <p><strong>Operator:</strong> Haruto Oikawa</p>
-              <p><strong>Location:</strong> Osaka City, Osaka Prefecture, Japan (Exact address available upon request)</p>
-              <p><strong>Contact Email:</strong> harutooikawa46@gmail.com</p>
+              <p><strong>Operator:</strong> </p>
+              <p><strong>Location:</strong> </p>
+              <p><strong>Contact Email:</strong> </p>
               <p><strong>Sales Price:</strong> Displayed on each product page</p>
               <p><strong>Payment Method:</strong> Credit Card (via Stripe)</p>
               <p><strong>Delivery Method:</strong> Digital download via email or instant link</p>
